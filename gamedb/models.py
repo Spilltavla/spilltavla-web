@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
-class Game(models.Model):
+class GameBase(models.Model):
     name = models.CharField(max_length=255, verbose_name='navn')
     description = models.TextField(null=True, blank=True,
                                    verbose_name='Beskrivelse')
@@ -17,15 +17,8 @@ class Game(models.Model):
     rules_known_by = models.ManyToManyField(User, null=True, blank=True,
                                             verbose_name='kan reglene',
                                             related_name='game_rules_known')
-    similar_games = models.ManyToManyField('self', null=True, blank=True,
-                                           verbose_name='lignende spill')
     def __unicode__(self):
         return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'spill'
-        verbose_name_plural = 'spill'
 
     def number_of_owners(self):
         '''
@@ -36,3 +29,21 @@ class Game(models.Model):
         '''
         return len(self.owners.all())
     number_of_owners.short_description = 'antall eiere'
+
+class Game(GameBase):
+    similar_games = models.ManyToManyField('self', null=True, blank=True,
+                                           verbose_name='lignende spill')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'spill'
+        verbose_name_plural = 'spill'
+
+class GameExpansion(GameBase):
+    expands = models.ManyToManyField(Game, verbose_name='Utvider',
+                                     related_name='expansions')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'utvidelsespakke'
+        verbose_name_plural = 'utvidelsespakker'

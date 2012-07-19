@@ -8,53 +8,93 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Game'
-        db.create_table('gamedb_game', (
+        # Adding model 'GameBase'
+        db.create_table('gamedb_gamebase', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('added_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
+        db.send_create_signal('gamedb', ['GameBase'])
+
+        # Adding M2M table for field owners on 'GameBase'
+        db.create_table('gamedb_gamebase_owners', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('gamebase', models.ForeignKey(orm['gamedb.gamebase'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique('gamedb_gamebase_owners', ['gamebase_id', 'user_id'])
+
+        # Adding M2M table for field disposers on 'GameBase'
+        db.create_table('gamedb_gamebase_disposers', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('gamebase', models.ForeignKey(orm['gamedb.gamebase'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique('gamedb_gamebase_disposers', ['gamebase_id', 'user_id'])
+
+        # Adding M2M table for field rules_known_by on 'GameBase'
+        db.create_table('gamedb_gamebase_rules_known_by', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('gamebase', models.ForeignKey(orm['gamedb.gamebase'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique('gamedb_gamebase_rules_known_by', ['gamebase_id', 'user_id'])
+
+        # Adding model 'Game'
+        db.create_table('gamedb_game', (
+            ('gamebase_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['gamedb.GameBase'], unique=True, primary_key=True)),
+        ))
         db.send_create_signal('gamedb', ['Game'])
 
-        # Adding M2M table for field owners on 'Game'
-        db.create_table('gamedb_game_owners', (
+        # Adding M2M table for field similar_games on 'Game'
+        db.create_table('gamedb_game_similar_games', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('game', models.ForeignKey(orm['gamedb.game'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
+            ('from_game', models.ForeignKey(orm['gamedb.game'], null=False)),
+            ('to_game', models.ForeignKey(orm['gamedb.game'], null=False))
         ))
-        db.create_unique('gamedb_game_owners', ['game_id', 'user_id'])
+        db.create_unique('gamedb_game_similar_games', ['from_game_id', 'to_game_id'])
 
-        # Adding M2M table for field disposers on 'Game'
-        db.create_table('gamedb_game_disposers', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('game', models.ForeignKey(orm['gamedb.game'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        # Adding model 'GameExpansion'
+        db.create_table('gamedb_gameexpansion', (
+            ('gamebase_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['gamedb.GameBase'], unique=True, primary_key=True)),
         ))
-        db.create_unique('gamedb_game_disposers', ['game_id', 'user_id'])
+        db.send_create_signal('gamedb', ['GameExpansion'])
 
-        # Adding M2M table for field rules_known_by on 'Game'
-        db.create_table('gamedb_game_rules_known_by', (
+        # Adding M2M table for field expands on 'GameExpansion'
+        db.create_table('gamedb_gameexpansion_expands', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('game', models.ForeignKey(orm['gamedb.game'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
+            ('gameexpansion', models.ForeignKey(orm['gamedb.gameexpansion'], null=False)),
+            ('game', models.ForeignKey(orm['gamedb.game'], null=False))
         ))
-        db.create_unique('gamedb_game_rules_known_by', ['game_id', 'user_id'])
+        db.create_unique('gamedb_gameexpansion_expands', ['gameexpansion_id', 'game_id'])
 
 
     def backwards(self, orm):
+        # Deleting model 'GameBase'
+        db.delete_table('gamedb_gamebase')
+
+        # Removing M2M table for field owners on 'GameBase'
+        db.delete_table('gamedb_gamebase_owners')
+
+        # Removing M2M table for field disposers on 'GameBase'
+        db.delete_table('gamedb_gamebase_disposers')
+
+        # Removing M2M table for field rules_known_by on 'GameBase'
+        db.delete_table('gamedb_gamebase_rules_known_by')
+
         # Deleting model 'Game'
         db.delete_table('gamedb_game')
 
-        # Removing M2M table for field owners on 'Game'
-        db.delete_table('gamedb_game_owners')
+        # Removing M2M table for field similar_games on 'Game'
+        db.delete_table('gamedb_game_similar_games')
 
-        # Removing M2M table for field disposers on 'Game'
-        db.delete_table('gamedb_game_disposers')
+        # Deleting model 'GameExpansion'
+        db.delete_table('gamedb_gameexpansion')
 
-        # Removing M2M table for field rules_known_by on 'Game'
-        db.delete_table('gamedb_game_rules_known_by')
+        # Removing M2M table for field expands on 'GameExpansion'
+        db.delete_table('gamedb_gameexpansion_expands')
 
 
     models = {
@@ -95,7 +135,12 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'gamedb.game': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Game'},
+            'Meta': {'ordering': "['name']", 'object_name': 'Game', '_ormbases': ['gamedb.GameBase']},
+            'gamebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['gamedb.GameBase']", 'unique': 'True', 'primary_key': 'True'}),
+            'similar_games': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'similar_games_rel_+'", 'null': 'True', 'to': "orm['gamedb.Game']"})
+        },
+        'gamedb.gamebase': {
+            'Meta': {'object_name': 'GameBase'},
             'added_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'disposers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'games_disposed'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
@@ -104,6 +149,11 @@ class Migration(SchemaMigration):
             'owners': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'games_owned'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'rules_known_by': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'game_rules_known'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'updated_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
+        },
+        'gamedb.gameexpansion': {
+            'Meta': {'ordering': "['name']", 'object_name': 'GameExpansion', '_ormbases': ['gamedb.GameBase']},
+            'expands': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'expansions'", 'symmetrical': 'False', 'to': "orm['gamedb.Game']"}),
+            'gamebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['gamedb.GameBase']", 'unique': 'True', 'primary_key': 'True'})
         }
     }
 
