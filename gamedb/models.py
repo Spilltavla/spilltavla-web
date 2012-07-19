@@ -26,3 +26,13 @@ class Game(models.Model):
         ordering = ['name']
         verbose_name = 'spill'
         verbose_name_plural = 'spill'
+
+    def number_of_owners(self):
+        '''
+        Returns the number of owners for the given game. This is used for
+        listing games in the admin.
+
+        See list_display in admin.py
+        '''
+        return len(self.owners.all())
+    number_of_owners.short_description = 'antall eiere'

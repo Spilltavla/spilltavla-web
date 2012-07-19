@@ -5,6 +5,6 @@ class GameAdmin(admin.ModelAdmin):
     """
     Admin settings for a game
     """
-    list_display = ('name',)
+    list_display = ('name', 'number_of_owners')
 
 admin.site.register(Game, GameAdmin)
