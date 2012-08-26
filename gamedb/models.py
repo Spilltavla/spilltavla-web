@@ -9,9 +9,6 @@ class GameBase(models.Model):
     owners = models.ManyToManyField(User, null=True, blank=True,
                                     verbose_name='eiere',
                                     related_name='games_owned')
-    disposers = models.ManyToManyField(User, null=True, blank=True,
-                                       verbose_name='kan skaffes av',
-                                       related_name='games_disposed')
     added_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     rules_known_by = models.ManyToManyField(User, null=True, blank=True,
