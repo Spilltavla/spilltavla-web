@@ -5,6 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^/?$', 'spilltavla_web.views.frontpage', name='frontpage'),
     # Examples:
     # url(r'^$', 'spilltavla_web.views.home', name='home'),
     # url(r'^spilltavla_web/', include('spilltavla_web.foo.urls')),
@@ -15,6 +16,4 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'', include('social_auth.urls')),
-    
-
 )
