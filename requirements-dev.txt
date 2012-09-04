@@ -3,3 +3,4 @@ South
 django-debug-toolbar
 django-extensions
 pytz
+django-social-auth
