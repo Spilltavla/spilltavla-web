@@ -1,0 +1,17 @@
+
+<div>
+  <p>Beklager, det skjedde noe galt så vi får ikke logget deg inn</p>
+
+  {% if messages %}
+    {% for msg in messages %}
+        <p class="error">{{ msg.message }} ({{ msg.extra_tags }})</p>
+    {% endfor %}
+  {% endif %}
+  {% if error_msg %}
+    <p>Detaljer:</p>
+    <p class="error">{{ error_msg }}</p>
+  {% endif %}
+
+  <p>Venligst prøv igjen <a href="/">Home</a></p>
+</div>
+{% endblock %}

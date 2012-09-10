@@ -1,0 +1,38 @@
+<h1>Brukerregistrering</h1>
+
+Vi har hentet følgende informasjon om deg fra {{backend}}. Du kan endre den
+hvis du vil.
+<form action="" method="post">
+    {% csrf_token %}
+    <p>
+        {{form.username.errors}}
+        {{form.username.label_tag}}
+        {{form.username}}
+        <br />
+        {{form.first_name.errors}}
+        {{form.first_name.label_tag}}
+        {{form.first_name}}
+        <br />
+        {{form.last_name.errors}}
+        {{form.last_name.label_tag}}
+        {{form.last_name}}
+        <br />
+        {{form.gender.errors}}
+        {{form.gender.label_tag}}
+        {{form.gender}}
+        <br />
+        {{form.birthday.errors}}
+        {{form.birthday.label_tag}}
+        {{form.birthday}}
+    </p>
+    <p>Bilde: <img src="{{picture}}" /></p>
+    <p>For å registrere deg på spilltavla.no trenger du en invitasjon.
+        Vennligst fyll inn invitasjonskoden under.
+    </p>
+    <p>
+        {{form.invitation_code.errors}}
+        {{form.invitation_code.label_tag}}
+        {{form.invitation_code}}
+     </p>
+    <input type="submit" value="Send" />
+</form>
