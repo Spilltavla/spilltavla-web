@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'gamedb',
     'social_auth',
+    'user_management',
 )
 
 # A sample logging configuration. The only tangible logging
