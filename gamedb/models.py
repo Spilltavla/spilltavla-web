@@ -39,17 +39,15 @@ class Game(models.Model):
         verbose_name = 'spill'
         verbose_name_plural = 'spill'
 
-class NewClass(models.Model):
-    name = models.CharField(max_length=255, verbose_name='navn')
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'spill2'
-        verbose_name_plural = 'spill2'
-
 
 class GameEdition(GameBase):
     edition_of = models.ForeignKey(Game, verbose_name='Spillutgave',
                                    related_name='editions')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'spillutgave'
+        verbose_name_plural = 'spillutgaver'
 class GameExpansion(GameBase):
     expands = models.ManyToManyField(Game, verbose_name='Utvider',
                                      related_name='expansions')
